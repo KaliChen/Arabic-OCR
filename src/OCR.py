@@ -10,7 +10,7 @@ import pickle
 import matplotlib.pyplot as plt
 import multiprocessing as mp
 
-model_name = '2L_NN.sav'
+model_name = 'LinearSVM.sav'
 def load_model():
     location = 'models'
     if os.path.exists(location):
@@ -34,7 +34,9 @@ def run2(obj):
             continue
         feature_vector = featurizer(ready_char)
         predicted_char = model.predict([feature_vector])[0]
+        #print(predicted_char)
         txt_word += predicted_char
+    #print(txt_word)
     return txt_word
 
 
@@ -46,8 +48,11 @@ def run(image_path):
     # Start Timer
     before = time.time()
     words = extract_words(full_image)       # [ (word, its line),(word, its line),..  ]
+    #print(words)
     pool = mp.Pool(mp.cpu_count())
     predicted_words = pool.map(run2, words)
+    print("predicted_words: ")
+    print(predicted_words)
     pool.close()
     pool.join()
     # Stop Timer
@@ -55,17 +60,24 @@ def run(image_path):
 
     # append in the total string.
     for word in predicted_words:
+        print("word: "+word+"\n")
         predicted_text += word
         predicted_text += ' '
-
+    print("predicted_text:\n")
+    print(predicted_text)
     exc_time = after-before
     # Create file with the same name of the image
     img_name = image_path.split('\\')[1].split('.')[0]
-
+    # img_idx = int(img_name.split('_')[1])         # the valid one for testing day.
+    img_idx = int(''.join(i for i in img_name if i.isdigit()))
+    print("img_idx:\n")
+    print(img_idx)
     with open(f'output/text/{img_name}.txt', 'w', encoding='utf8') as fo:
         fo.writelines(predicted_text)
-
-    return (img_name, exc_time)
+    
+    return (img_idx, exc_time)
+    # with open('output/running_time.txt', 'a') as fo:
+    #     fo.write(f'{img_idx}: {exc_time:.2f}s\n')
 
 
 if __name__ == "__main__":
@@ -79,7 +91,7 @@ if __name__ == "__main__":
     if not os.path.exists(destination):
         os.makedirs(destination)
     
-    types = ['png', 'jpg', 'bmp']
+    types = ['png', 'jpg']
     images_paths = []
     for t in types:
         images_paths.extend(glob(f'test/*.{t}'))

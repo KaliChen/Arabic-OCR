@@ -14,11 +14,11 @@ def preprocess(image):
     gray_img = cv.bitwise_not(gray_img)
 
     binary_img = binary_otsus(gray_img, 0)
-    # cv.imwrite('origin.png', gray_img)
+    cv.imwrite('origin.png', gray_img)
 
     # deskewed_img = deskew(binary_img)
     deskewed_img = deskew(binary_img)
-    # cv.imwrite('output.png', deskewed_img)
+    cv.imwrite('output.png', deskewed_img)
 
     # binary_img = binary_otsus(deskewed_img, 0)
     # breakpoint()
@@ -100,7 +100,7 @@ def extract_words(img, visual=0):
     if visual:
         for idx, word in enumerate(words):
             save_image(word[0], 'words', f'word{idx}')
-
+    #print(words)
     return words
 
 
