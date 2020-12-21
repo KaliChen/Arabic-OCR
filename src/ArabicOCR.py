@@ -5,7 +5,7 @@ from tkinter.ttk import Notebook
 from tkinter import filedialog
 from tkinter import ttk
 import subprocess
-
+#import glob
 from ImgViewer.imgview import ImageViewer
 from OCR import run, run2
 #from character_segmentation import segment
@@ -29,7 +29,7 @@ class ArabicOCR():
         self.model_Path = tk.StringVar()
         self.Imgfolder_Path = tk.StringVar()
         self.saveText_Path =  tk.StringVar()
-        self.init_Font_tab()
+        self.init_Model_tab()
         self.imgview = ImageViewer(self.parent)
         ImageConfig_Button = tk.Button(self.parent, text = "ImageConfig",font=('Courier', 8), command = self.image_config)
         ImageConfig_Button.pack(side=tk.TOP, expand=tk.YES, fill = tk.X)        
@@ -52,58 +52,41 @@ class ArabicOCR():
         imageFile = self.imgview.image_paths[self.imgview.image_idx]
         self.imageFile = str(imageFile)
 
-    def Select_font(self, event = None):
-        for item in self.Table_of_font.selection():
-            self.item_text = self.Table_of_font.item(item, "values")
-            #print(self.item_text)
-            #print(item)
-            #print(self.item_text[0].rstrip('.ttf'))
-            
-            # 載入字體
-        self.font = ImageFont.truetype(self.item_text[0], 20)
+    def Select_model(self, event = None):
+        for item in self.Table_of_model.selection():
+            self.item_text = self.Table_of_model.item(item, "values")
+
         tkmsg.showinfo("Information",self.item_text[0])
 
-    def List_font(self, event = None):
-        if platform.system() == "Windows":
-            fontlist = font_Item
-            """
-            font_Item = ('Arial', #normal
-             'msgothic', #jpn
-             'arabtype', #ara
-             'mingliu',  #CN_TR
-             'simsun',   #CN_Sim
-             'malgun')   #ko
-
-            """
-            for ttf in fontlist:
-                self.Table_of_font.insert("", index = 'end', text = ttf,  values = (ttf))
-
-        else:
-            fontlist = glob.glob( "NICE_font/*.[tT][tT][fF]" )            
-            for ttf in fontlist:
-                (head, filename) = os.path.split(ttf)
-                self.Table_of_font.insert("", index = 'end', text = filename,  values = (ttf))
+    def List_model(self, event = None):
+        print("listmodel!!")
+        #Modellist = glob( "output/*.[tT][xX][tT]" )
+        Modellist = glob( "models/*.[sS][aA][vV]" )
+        print(Modellist)           
+        for sav in Modellist:
+            (head, filename) = os.path.split(sav)
+            print(sav)
+            self.Table_of_Model.insert("", index = 'end', text = filename,  values = (sav))
         #tkmsg.showinfo("Information","Here are font types!")
 
-    def init_Font_tab(self):
-        self.Font_tab = tk.Frame(self.parent)
-        self.Font_tab.pack(side = tk.TOP, expand=tk.YES, fill=tk.BOTH)
+    def init_Model_tab(self):
+        self.Model_tab = tk.Frame(self.parent)
+        self.Model_tab.pack(side = tk.TOP, expand=tk.YES, fill=tk.BOTH)
         #self.settingnotebook.add(self.Font_tab, text = "Font")
 
-        ListFont = tk.Label(self.Font_tab)
-        ListFont.pack(side=tk.TOP, expand=tk.NO)
+        ListModel = tk.Label(self.Model_tab)
+        ListModel.pack(side=tk.TOP, expand=tk.NO)
 
-        #self.Table_of_font = ttk.Treeview(self.Font_Setting_tab,columns = ["#1"],height = 10)
-        self.Table_of_font = ttk.Treeview(ListFont,height = 3)
-        self.Table_of_font.heading("#0", text = "List of font")#icon column
+        self.Table_of_Model = ttk.Treeview(ListModel,height = 3)
+        self.Table_of_Model.heading("#0", text = "List of Model")#icon column
         #self.Table_of_font.heading("#1", text = "Path")
-        self.Table_of_font.column("#0", width = 500)#icon column
+        self.Table_of_Model.column("#0", width = 500)#icon column
         #self.Table_of_font.column("#1", width = 90)
-        self.Table_of_font.tag_configure('T', font = 'Courier,4')
-        self.Table_of_font.bind("<Double-1>",self.Select_font)
-        self.Table_of_font.pack(side=tk.TOP, expand=tk.NO, fill=tk.BOTH)
-        self.List_font_Button = tk.Button(ListFont, text = "List font",font=('Courier', 10), command = self.List_font)
-        self.List_font_Button.pack(side=tk.TOP, expand=tk.YES, fill = tk.BOTH) 
+        self.Table_of_Model.tag_configure('T', font = 'Courier,4')
+        self.Table_of_Model.bind("<Double-1>",self.Select_model)
+        self.Table_of_Model.pack(side=tk.TOP, expand=tk.NO, fill=tk.BOTH)
+        self.List_Model_Button = tk.Button(ListModel, text = "List Model",font=('Courier', 10), command = self.List_model)
+        self.List_Model_Button.pack(side=tk.TOP, expand=tk.YES, fill = tk.BOTH) 
 
     def init_DisplaySceneMarkInfo_tab(self):
         self.DisplaySceneMarkInfo_Frame = tk.LabelFrame(self.parent, text="Display tesseract OCR and Translation Info", font=('Courier', 9))
@@ -157,7 +140,7 @@ class ArabicOCR():
         
     def init_ArabicOCR(self):
         self.ArabicOCR_tab = tk.Frame(self.parent)
-        self.ArabicOCR_tab.pack(side = tk.LEFT, expand=tk.YES, fill=tk.BOTH)
+        self.ArabicOCR_tab.pack(side = tk.TOP, expand=tk.YES, fill=tk.BOTH)
 
         loadModel_Button = tk.Button(self.ArabicOCR_tab, text = "Load Model",font=('Courier', 8), command = self.loadmodel)
         loadModel_Button.pack(side=tk.TOP, expand=tk.NO, fill = tk.X)
