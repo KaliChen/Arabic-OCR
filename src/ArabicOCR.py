@@ -1,6 +1,6 @@
 import tkinter as tk
 #from tkinter.ttk import *
-from tkinter import messagebox as msg
+from tkinter import messagebox as tkmsg
 from tkinter.ttk import Notebook
 from tkinter import filedialog
 from tkinter import ttk
@@ -26,9 +26,6 @@ class ArabicOCR():
     def __init__(self, master):
         self.parent = master
         self.imageFile = str()
-        self.model_Path = tk.StringVar()
-        self.Imgfolder_Path = tk.StringVar()
-        self.saveText_Path =  tk.StringVar()
         self.init_Model_tab()
         self.imgview = ImageViewer(self.parent)
         ImageConfig_Button = tk.Button(self.parent, text = "ImageConfig",font=('Courier', 8), command = self.image_config)
@@ -53,26 +50,21 @@ class ArabicOCR():
         self.imageFile = str(imageFile)
 
     def Select_model(self, event = None):
-        for item in self.Table_of_model.selection():
-            self.item_text = self.Table_of_model.item(item, "values")
+        for item in self.Table_of_Model.selection():
+            self.item_text = self.Table_of_Model.item(item, "values")
 
         tkmsg.showinfo("Information",self.item_text[0])
 
     def List_model(self, event = None):
-        print("listmodel!!")
-        #Modellist = glob( "output/*.[tT][xX][tT]" )
         Modellist = glob( "models/*.[sS][aA][vV]" )
         print(Modellist)           
         for sav in Modellist:
             (head, filename) = os.path.split(sav)
-            print(sav)
             self.Table_of_Model.insert("", index = 'end', text = filename,  values = (sav))
-        #tkmsg.showinfo("Information","Here are font types!")
 
     def init_Model_tab(self):
         self.Model_tab = tk.Frame(self.parent)
         self.Model_tab.pack(side = tk.TOP, expand=tk.YES, fill=tk.BOTH)
-        #self.settingnotebook.add(self.Font_tab, text = "Font")
 
         ListModel = tk.Label(self.Model_tab)
         ListModel.pack(side=tk.TOP, expand=tk.NO)
@@ -89,7 +81,7 @@ class ArabicOCR():
         self.List_Model_Button.pack(side=tk.TOP, expand=tk.YES, fill = tk.BOTH) 
 
     def init_DisplaySceneMarkInfo_tab(self):
-        self.DisplaySceneMarkInfo_Frame = tk.LabelFrame(self.parent, text="Display tesseract OCR and Translation Info", font=('Courier', 9))
+        self.DisplaySceneMarkInfo_Frame = tk.LabelFrame(self.parent, text="Display ArabicOCR Info", font=('Courier', 9))
         self.DisplaySceneMarkInfo_Frame .pack(side=tk.TOP, expand=tk.NO)
         self.DisplaySceneMarkInfo = tk.Text(self.DisplaySceneMarkInfo_Frame, width = 70, height = 7) 
         DisplaySceneMarkInfo_sbarV = tk.Scrollbar(self.DisplaySceneMarkInfo_Frame, orient=tk.VERTICAL)
@@ -141,20 +133,6 @@ class ArabicOCR():
     def init_ArabicOCR(self):
         self.ArabicOCR_tab = tk.Frame(self.parent)
         self.ArabicOCR_tab.pack(side = tk.TOP, expand=tk.YES, fill=tk.BOTH)
-
-        loadModel_Button = tk.Button(self.ArabicOCR_tab, text = "Load Model",font=('Courier', 8), command = self.loadmodel)
-        loadModel_Button.pack(side=tk.TOP, expand=tk.NO, fill = tk.X)
-
-        self.ModelPath = tk.Entry(self.ArabicOCR_tab,font=('Courier', 8), textvariable = self.model_Path)
-        self.ModelPath.pack(side=tk.TOP, expand=tk.NO, fill = tk.X)
-        
-        loadImgfolder_Button = tk.Button(self.ArabicOCR_tab,
-                                         text = "Load Image Folder",
-                                         font=('Courier', 8), command = self.loadImgfolder)
-        loadImgfolder_Button.pack(side=tk.TOP, expand=tk.NO, fill = tk.X)
-
-        self.ImagefolderPath = tk.Entry(self.ArabicOCR_tab,font=('Courier', 8), textvariable = self.Imgfolder_Path)
-        self.ImagefolderPath.pack(side=tk.TOP, expand=tk.NO, fill = tk.X)
         
         runArabicOCR_Button = tk.Button(self.ArabicOCR_tab, text = "run ArabicOCR",font=('Courier', 8), command = self.runArabicOCR)
         runArabicOCR_Button.pack(side=tk.TOP, expand=tk.NO, fill = tk.X)
