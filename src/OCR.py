@@ -11,6 +11,8 @@ import matplotlib.pyplot as plt
 import multiprocessing as mp
 
 model_name = 'LinearSVM.sav'
+predicted_Text = str()
+
 def load_model():
     location = 'models'
     if os.path.exists(location):
@@ -65,6 +67,7 @@ def run(image_path):
         predicted_text += ' '
     print("predicted_text:\n")
     print(predicted_text)
+    predicted_Text = str(predicted_text)
     exc_time = after-before
     # Create file with the same name of the image
     img_name = image_path.split('\\')[1].split('.')[0]
