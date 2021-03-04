@@ -9,6 +9,7 @@ from train import prepare_char, featurizer
 import pickle
 import matplotlib.pyplot as plt
 import multiprocessing as mp
+import platform
 
 model_name = 'LinearSVM.sav'
 predicted_Text = str()
@@ -70,7 +71,10 @@ def run(image_path):
     predicted_Text = str(predicted_text)
     exc_time = after-before
     # Create file with the same name of the image
-    img_name = image_path.split('\\')[1].split('.')[0]
+    if platform.system() == 'Windows':
+        img_name = image_path.split('\\')[1].split('.')[0]
+    elif platform.system() =='Linux':
+        img_name = image_path.split('/')[1].split('.')[0]
     # img_idx = int(img_name.split('_')[1])         # the valid one for testing day.
     img_idx = int(''.join(i for i in img_name if i.isdigit()))
     print("img_idx:\n")
@@ -94,7 +98,7 @@ if __name__ == "__main__":
     if not os.path.exists(destination):
         os.makedirs(destination)
     
-    types = ['png', 'jpg']
+    types = ['png', 'jpg', 'jpeg']
     images_paths = []
     for t in types:
         images_paths.extend(glob(f'test/*.{t}'))
