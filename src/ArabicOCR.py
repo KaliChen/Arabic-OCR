@@ -15,8 +15,11 @@ import os
 import platform
 import ImgViewer.ImgViewer.imgview as IV #(1)
 
+#from OCR import load_model, run2, run, main
+from OCR import load_model, run2, run, OCR_main
+#from character_segmentation import binarize,fill,baseline_detection, horizontal_transitions, vertical_transitions, cut_points, check_baseline, inside_hole, check_hole, remove_dots, check_dots, check_stroke, filter_regions, post, extract_char, segment
 
-class ArabicOCR2(tk.Tk):
+class ArabicOCR(tk.Tk):
     def __init__(self):
         super().__init__()
 
@@ -168,45 +171,10 @@ class ArabicOCR2(tk.Tk):
         tkmsg.showinfo("Information","CLEAR")
 
     def runArabicOCR(self, event = None):
-        model_name = self.item_text[0]
-        print(model_name)
-        self.DisplaySceneMarkInfo.insert(tk.END,model_name)
-        #Clear the old data in running_time.txt
-        if not os.path.exists('output'):
-            os.mkdir('output')
-        open('output/running_time.txt', 'w').close()
-
-        destination = 'output/text'
-        if not os.path.exists(destination):
-            os.makedirs(destination)
-        """
-        types = ['png', 'jpg']
-        images_paths = []
-        for t in types:
-            images_paths.extend(glob(f'test/*.{t}'))
-            #print(images_paths)
-        before = time.time()
-
-        running_time = []
-
-        for images_path in tqdm(images_paths,total=len(images_paths)):
-            running_time.append(run(images_path))
-
-        running_time.sort()
-        with open('output/running_time.txt', 'w') as r:
-            for t in running_time:
-                r.writelines(f'image#{t[0]}: {t[1]}\n')       
-        after = time.time()
-        print(f'total time to finish {len(images_paths)} images:')
-        print(after - before)
-        """
-        run(self.imageFile, model_name)
-        print(self.imageFile)
-        ##self.DisplaySceneMarkInfo.insert(tk.END,predicted_Text)
-        print(predicted_Text)
+        OCR_main()
     def init_ArabicOCR(self):
         self.ArabicOCR_tab = tk.Frame(self.notebook)
-        self.notebook.add(self.ArabicOCR_tab, text="init_ImgViewer")
+        self.notebook.add(self.ArabicOCR_tab, text="init_ArabicOCR")
         #self.ArabicOCR_tab.pack(side = tk.TOP, expand=tk.YES, fill=tk.BOTH)
         
         runArabicOCR_Button = tk.Button(self.ArabicOCR_tab, text = "run ArabicOCR",font=('Courier', 8), command = self.runArabicOCR)
@@ -214,7 +182,7 @@ class ArabicOCR2(tk.Tk):
 
 if __name__ == "__main__":
     
-    TT = ArabicOCR2()
+    TT = ArabicOCR()
     TT.mainloop()
 
 
