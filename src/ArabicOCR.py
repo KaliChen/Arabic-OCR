@@ -15,11 +15,13 @@ import os
 import platform
 import ImgViewer.ImgViewer.imgview as IV #(1)
 
-#from OCR import load_model, run2, run, main
-from OCR import load_model, run2, run, OCR_main
+from OCR import model_name, load_model, run2, run, OCR_main
+
 #from character_segmentation import binarize,fill,baseline_detection, horizontal_transitions, vertical_transitions, cut_points, check_baseline, inside_hole, check_hole, remove_dots, check_dots, check_stroke, filter_regions, post, extract_char, segment
 
 class ArabicOCR(tk.Tk):
+    CANVAS_WIDTH = 530
+    CANVAS_HEIGHT = 360
     def __init__(self):
         super().__init__()
 
@@ -46,8 +48,8 @@ class ArabicOCR(tk.Tk):
         self.notebook.pack(side = tk.TOP,fill=tk.BOTH, expand=tk.YES)
 
         self.init_ImgViewer()
-        self.init_Model_tab()
-        self.init_DisplaySceneMarkInfo_tab()
+        #self.init_Model_tab()
+        #self.init_DisplaySceneMarkInfo_tab()
         self.init_ArabicOCR()
         
     def init_ImgViewer(self):
@@ -129,6 +131,7 @@ class ArabicOCR(tk.Tk):
         #self.Table_of_font.column("#1", width = 90)
         self.Table_of_Model.tag_configure('T', font = 'Courier,4')
         self.Table_of_Model.bind("<Double-1>",self.Select_model)
+        #self.Table_of_Model.bind("<Double-1>",self.Load_model)
         self.Table_of_Model.pack(side=tk.TOP, expand=tk.NO, fill=tk.BOTH)
         self.List_Model_Button = tk.Button(ListModel, text = "List Model",font=('Courier', 10), command = self.List_model)
         self.List_Model_Button.pack(side=tk.TOP, expand=tk.YES, fill = tk.BOTH) 
@@ -136,12 +139,16 @@ class ArabicOCR(tk.Tk):
         for item in self.Table_of_Model.selection():
             self.item_text = self.Table_of_Model.item(item, "values")
         tkmsg.showinfo("Information",self.item_text[0])
+        self.Load_model()
+        
         print("self.item_text")
         print(self.item_text)
         print("self.item_text[0]")
         print(self.item_text[0])
+        
         ##self.DisplaySceneMarkInfo.insert(tk.END,self.item_text[0])
 
+        
     def List_model(self, event = None):
         Modellist = glob( "models/*.[sS][aA][vV]" )           
         for sav in Modellist:
@@ -170,15 +177,69 @@ class ArabicOCR(tk.Tk):
         self.DisplaySceneMarkInfo.delete('1.0', tk.END)
         tkmsg.showinfo("Information","CLEAR")
 
-    def runArabicOCR(self, event = None):
+    def runOCR_main(event = None):
+        #model_name = '1L_NN.sav'
+        
         OCR_main()
+        
     def init_ArabicOCR(self):
         self.ArabicOCR_tab = tk.Frame(self.notebook)
         self.notebook.add(self.ArabicOCR_tab, text="init_ArabicOCR")
         #self.ArabicOCR_tab.pack(side = tk.TOP, expand=tk.YES, fill=tk.BOTH)
         
-        runArabicOCR_Button = tk.Button(self.ArabicOCR_tab, text = "run ArabicOCR",font=('Courier', 8), command = self.runArabicOCR)
+        runArabicOCR_Button = tk.Button(self.ArabicOCR_tab, text = "run ArabicOCR",font=('Courier', 8), command = self.runOCR_main)
         runArabicOCR_Button.pack(side=tk.TOP, expand=tk.NO, fill = tk.X)
+
+        self.Model_tab = tk.Frame(self.ArabicOCR_tab)
+        self.Model_tab.pack(side=tk.TOP, expand=tk.NO, fill = tk.X)
+        #self.Model_tab = tk.Frame(self.parent)
+        #self.Model_tab.pack(side = tk.TOP, expand=tk.YES, fill=tk.BOTH)
+
+        ListModel = tk.Label(self.Model_tab)
+        ListModel.pack(side=tk.TOP, expand=tk.NO,fill = tk.X)
+
+        self.Table_of_Model = ttk.Treeview(ListModel,height = 3)
+        self.Table_of_Model.heading("#0", text = "List of Model")#icon column
+        #self.Table_of_font.heading("#1", text = "Path")
+        self.Table_of_Model.column("#0", width = 500)#icon column
+        #self.Table_of_font.column("#1", width = 90)
+        self.Table_of_Model.tag_configure('T', font = 'Courier,4')
+        self.Table_of_Model.bind("<Double-1>",self.Select_model)
+        #self.Table_of_Model.bind("<Double-1>",self.Load_model)
+        self.Table_of_Model.pack(side=tk.TOP, expand=tk.NO, fill=tk.BOTH)
+        self.List_Model_Button = tk.Button(ListModel, text = "List Model",font=('Courier', 10), command = self.List_model)
+        self.List_Model_Button.pack(side=tk.TOP, expand=tk.YES, fill = tk.BOTH)
+
+        self.DisplaySceneMarkInfo_tab = tk.Frame(self.ArabicOCR_tab)
+        #self.notebook.add(self.DisplaySceneMarkInfo_tab, text="DisplaySceneMarkInfo")
+        self.DisplaySceneMarkInfo_tab.pack(side=tk.TOP, expand=tk.NO, fill = tk.X)
+        self.DisplaySceneMarkInfo_Frame = tk.LabelFrame(self.DisplaySceneMarkInfo_tab, text="Display ArabicOCR Info", font=('Courier', 9))
+        self.DisplaySceneMarkInfo_Frame .pack(side=tk.TOP, expand=tk.NO, fill = tk.X)
+        self.DisplaySceneMarkInfo = tk.Text(self.DisplaySceneMarkInfo_Frame, width = 70, height = 7) 
+        DisplaySceneMarkInfo_sbarV = tk.Scrollbar(self.DisplaySceneMarkInfo_Frame, orient=tk.VERTICAL)
+        DisplaySceneMarkInfo_sbarH = tk.Scrollbar(self.DisplaySceneMarkInfo_Frame, orient=tk.HORIZONTAL)
+        DisplaySceneMarkInfo_sbarV.config(command=self.DisplaySceneMarkInfo.yview)
+        DisplaySceneMarkInfo_sbarH.config(command=self.DisplaySceneMarkInfo.xview)
+        self.DisplaySceneMarkInfo.config(yscrollcommand=DisplaySceneMarkInfo_sbarV.set)
+        self.DisplaySceneMarkInfo.config(xscrollcommand=DisplaySceneMarkInfo_sbarH.set)
+        DisplaySceneMarkInfo_sbarV.pack(side=tk.RIGHT, fill=tk.Y)
+        DisplaySceneMarkInfo_sbarH.pack(side=tk.BOTTOM, fill=tk.X)
+        self.DisplaySceneMarkInfo.pack(side=tk.TOP, expand=tk.NO, fill = tk.X)
+        DisplaySceneMarkInfoCLEAR =tk.Button(self.DisplaySceneMarkInfo_tab, text = "Clear",font=('Courier', 9), command = self.DisplaySceneMarkInfoCLEAR)
+        DisplaySceneMarkInfoCLEAR.pack(side=tk.TOP, expand=tk.NO, fill = tk.X)   
+                # image frame
+        self.iframe = tk.Frame(self.ArabicOCR_tab)
+        self.iframe.pack()
+        self.image_canvas = tk.Canvas(self.iframe, width=self.CANVAS_WIDTH, height=self.CANVAS_HEIGHT,cursor='plus')
+        image_Canvas_sbarV = tk.Scrollbar(self.iframe, orient=tk.VERTICAL)
+        image_Canvas_sbarH = tk.Scrollbar(self.iframe, orient=tk.HORIZONTAL)
+        image_Canvas_sbarV.config(command=self.image_canvas.yview)
+        image_Canvas_sbarH.config(command=self.image_canvas.xview)
+        self.image_canvas.config(yscrollcommand=image_Canvas_sbarV.set)
+        self.image_canvas.config(xscrollcommand=image_Canvas_sbarH.set)
+        image_Canvas_sbarV.pack(side=tk.RIGHT, fill=tk.Y)
+        image_Canvas_sbarH.pack(side=tk.BOTTOM, fill=tk.X)
+        self.image_canvas.pack(pady=0, anchor=tk.N, fill = tk.X)      
 
 if __name__ == "__main__":
     

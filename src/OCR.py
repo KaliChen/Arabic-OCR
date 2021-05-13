@@ -10,8 +10,10 @@ import pickle
 import multiprocessing as mp
 
 model_name = '2L_NN.sav'
+#model_name = str()
 def load_model():
     location = 'models'
+    print(model_name)
     if os.path.exists(location):
         model = pickle.load(open(f'models/{model_name}', 'rb'))
         return model
@@ -65,6 +67,7 @@ def run(image_path):
     return (img_name, exc_time)
 
 def OCR_main():
+    print(model_name)
     #Clear the old data in running_time.txt
     if not os.path.exists('output'):
         os.mkdir('output')
